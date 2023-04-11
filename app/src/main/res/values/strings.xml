@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HTC Whether</string>
+    <string name="search_hint">Enter city name, state &amp; Country code for fetch data</string>
+</resources>
