@@ -63,14 +63,10 @@ class MainActivity : AppCompatActivity() {
             var longitude: String = "0.0"
 
             if (Utils.hasInternetConnection(this)) {
-                /*latitude = myDataManager.latitudeFlow.collectAsState(initial = "")
-                longitude = myDataManager.longitudeFlow.toString()*/
-                myDataManager.latitudeFlow.asLiveData().observe(this) {
-                    latitude = it.toString()
-                }
-                myDataManager.longitudeFlow.asLiveData().observe(this) {
-                    longitude = it.toString()
-                }
+
+                val latLang = myDataManager.getLatLong().split(",")
+                latitude = latLang[0]
+                longitude = latLang[1]
                 locationLatitude = latitude.toDouble()
                 locationLongitude = longitude.toDouble()
                 if(!latitude.equals("0.0")){
@@ -107,11 +103,10 @@ class MainActivity : AppCompatActivity() {
                     response.data?.let {
 
                         updatedUI(it)
-                        GlobalScope.launch {
-                            it.coord?.lat?.toBigDecimal()?.toPlainString()
-                                ?.let { it1 -> it.coord?.lon?.toBigDecimal()?.toPlainString()
-                                    ?.let { it2 -> myDataManager.storeLatLong(it1, it2) } }
-                        }
+
+                        it.coord?.lat?.toBigDecimal()?.toPlainString()
+                            ?.let { it1 -> it.coord?.lon?.toBigDecimal()?.toPlainString()
+                                ?.let { it2 -> myDataManager.saveLatLong(it1, it2) } }
                     }
                     _binding.loadWhetherDialog.visibility = View.GONE
                 }
@@ -128,6 +123,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Method for get data based on user inputs
+     */
     private fun fetchDataFromAddress(address: String) {
         mainViewModel.fetchWhetherFromAddressResponse(address)
         mainViewModel.whetherAddressResponse.observe(this) { response ->
@@ -135,11 +133,9 @@ class MainActivity : AppCompatActivity() {
                 is ResponseStates.Success -> {
                     response.data?.let {
                         updatedUI(it)
-                        GlobalScope.launch {
-                            it.coord?.lat?.toBigDecimal()?.toPlainString()
-                                ?.let { it1 -> it.coord?.lon?.toBigDecimal()?.toPlainString()
-                                    ?.let { it2 -> myDataManager.storeLatLong(it1, it2) } }
-                        }
+                        it.coord?.lat?.toBigDecimal()?.toPlainString()
+                            ?.let { it1 -> it.coord?.lon?.toBigDecimal()?.toPlainString()
+                                ?.let { it2 -> myDataManager.saveLatLong(it1, it2) } }
                     }
                     _binding.loadWhetherDialog.visibility = View.GONE
                 }
@@ -192,7 +188,6 @@ class MainActivity : AppCompatActivity() {
                         val geocoder = Geocoder(this, Locale.getDefault())
                         val list: List<Address> = geocoder.getFromLocation(location.latitude, location.longitude, 1)
                         fetchData(list[0].latitude, list[0].longitude)
-
                     }
                 }
             } else {
@@ -221,6 +216,7 @@ class MainActivity : AppCompatActivity() {
             arrayOf( Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), permissionId)
     }
 
+    //Update the UI Based on data from service call
     private fun updatedUI(whetherResponse: WhetherResponse) {
 
         if(whetherResponse.weather.get(0).icon.equals("01d")){

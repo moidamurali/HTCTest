@@ -11,36 +11,17 @@ import kotlinx.coroutines.flow.map
 
 class MyDataManager(context: Context) {
 
-    // Create the dataStore and give it a name same as shared preferences
-    private val dataStore = context.createDataStore(name = "location_preferences")
-    //private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("location_preferences")
+    val sharedPreference =  context.getSharedPreferences("location_preferences",Context.MODE_PRIVATE)
 
-
-    // Create some keys we will use them to store and retrieve the data
-    companion object {
-        val LATITUDE_AGE_KEY = preferencesKey<String>("LATITUDE")
-        val LONGITUDE_NAME_KEY = preferencesKey<String>("LONGITUDE")
+     fun saveLatLong(latitude: String, longitude: String) {
+         var editor = sharedPreference.edit()
+         editor.putString("LATITUDE",latitude)
+         editor.putString("LONGITUDE",longitude)
+         editor.commit()
     }
 
-    // Store location data
-    // refer to the data store and using edit
-    // we can store values using the keys
-    suspend fun storeLatLong(latitude: String, longitude: String) {
-        dataStore.edit {
-            it[LATITUDE_AGE_KEY] = latitude
-            it[LONGITUDE_NAME_KEY] = longitude
-            // here it refers to the preferences we are editing
-        }
+    fun getLatLong(): String{
+       return sharedPreference.getString("LATITUDE","0.0") + "," + sharedPreference.getString("LONGITUDE","0.0")
     }
 
-    // Create an latitude flow to retrieve latitude from the preferences
-    // flow comes from the kotlin coroutine
-    val latitudeFlow: Flow<String> = dataStore.data.map {
-        it[LATITUDE_AGE_KEY] ?: ""
-    }
-
-    // Create a longitude flow to retrieve longitude from the preferences
-    val longitudeFlow: Flow<String> = dataStore.data.map {
-        it[LONGITUDE_NAME_KEY] ?: ""
-    }
 }
