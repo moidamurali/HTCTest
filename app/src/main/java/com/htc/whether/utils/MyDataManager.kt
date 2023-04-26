@@ -1,6 +1,8 @@
 package com.htc.whether.utils
 
 import android.content.Context
+import androidx.datastore.DataStore
+import androidx.datastore.preferences.Preferences
 import androidx.datastore.preferences.createDataStore
 import androidx.datastore.preferences.edit
 import androidx.datastore.preferences.preferencesKey
@@ -11,6 +13,8 @@ class MyDataManager(context: Context) {
 
     // Create the dataStore and give it a name same as shared preferences
     private val dataStore = context.createDataStore(name = "location_preferences")
+    //private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("location_preferences")
+
 
     // Create some keys we will use them to store and retrieve the data
     companion object {
@@ -25,7 +29,6 @@ class MyDataManager(context: Context) {
         dataStore.edit {
             it[LATITUDE_AGE_KEY] = latitude
             it[LONGITUDE_NAME_KEY] = longitude
-
             // here it refers to the preferences we are editing
         }
     }

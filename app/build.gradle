@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
     def coroutinesVersion = '1.4.3'
     def retrofitVersion = "2.9.0"
     def lifeCycleVersion = '2.2.0'

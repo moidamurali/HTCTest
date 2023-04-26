@@ -18,19 +18,19 @@ class MainViewModel @Inject constructor(
     private val repository: WhetherRepository,
     application: Application
 ) : AndroidViewModel(application) {
-    public val whetherResponse: MutableLiveData<ResponseStates<WhetherResponse>> = MutableLiveData()
-    public val whetherAddressResponse: MutableLiveData<ResponseStates<WhetherResponse>> = MutableLiveData()
+    val whetherResponse: MutableLiveData<ResponseStates<WhetherResponse>> = MutableLiveData()
+    val whetherAddressResponse: MutableLiveData<ResponseStates<WhetherResponse>> = MutableLiveData()
 
 
     fun fetchWhetherResponse(latitude: String, longitude: String) = viewModelScope.launch {
         repository.getWhether(latitude, longitude, Constants.API_KEY).collect { values ->
-            whetherResponse.value = values
+            whetherResponse.postValue(values)
         }
     }
 
     fun fetchWhetherFromAddressResponse(address: String) = viewModelScope.launch {
         repository.getWhetherFromAdd(address, Constants.API_KEY).collect { values ->
-            whetherAddressResponse.value = values
+            whetherAddressResponse.postValue(values)
         }
     }
 }
